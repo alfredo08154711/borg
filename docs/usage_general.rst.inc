@@ -319,10 +319,10 @@ and readable after one of the failures mentioned above occurred, run
 - Typically, file sizes up to a few hundred MB.
   Large repositories may require large files (>2 GB).
 - Up to 1000 files per directory (10000 for repositories initialized with Borg 1.0)
-- rename(2) / MoveFileX should work as specified, i.e. creation of the
-  destination must be a link operation which fails if the source is a
-  directory and the destination exists and is not an empty directory, since
-  this is used for locking
+- rename(2) / MoveFile(Ex) should work as specified, i.e. on the same file system
+  it should be a move (not a copy) operation, and in case of a directory
+  it should fail if the destination exists and is not an empty directory,
+  since this is used for locking
 - Hardlinks are needed for :ref:`borg_upgrade` ``--inplace``
 
 Units
