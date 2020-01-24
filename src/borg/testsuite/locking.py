@@ -123,8 +123,9 @@ class TestExclusiveLock:
                     self.count -= 1
                     return self.count
 
-        def acquire_release_loop(id, timeout, thread_id, lock_owner_counter, exception_counter, last_thread=None):
-            print("Thread %2d: Starting acquire_release_loop(id=%s, timeout=%d); lockpath=%s" % (thread_id, id, timeout, lockpath))
+        def acquire_release_loop(id, timeout, thread_id, lock_owner_counter, exception_counter, print_lock, last_thread=None):
+            with print_lock:
+                print("Thread %2d: Starting acquire_release_loop(id=%s, timeout=%d); lockpath=%s" % (thread_id, id, timeout, lockpath))
             timer = TimeoutTimer(timeout, -1).start()
             cycle = 0
 
@@ -133,27 +134,33 @@ class TestExclusiveLock:
                 try:
                     with ExclusiveLock(lockpath, id=id, timeout=timeout/20, sleep=-1):  # This timeout is only for not exceeding the given timeout by more than 5%. With sleep<0 it's constantly polling anyway.
                         lock_owner_count = lock_owner_counter.incr()
-                        print("Thread %2d: Acquired the lock. It's my %d. loop cycle. I am the %d. who has the lock concurrently." % (thread_id, cycle, lock_owner_count))
+                        with print_lock:
+                            print("Thread %2d: Acquired the lock. It's my %d. loop cycle. I am the %d. who has the lock concurrently." % (thread_id, cycle, lock_owner_count))
                         time.sleep(0.005)
                         lock_owner_count = lock_owner_counter.decr()
-                        print("Thread %2d: Releasing the lock, finishing my %d. loop cycle. Currently, %d colleagues still have the lock." % (thread_id, cycle, lock_owner_count))
+                        with print_lock:
+                            print("Thread %2d: Releasing the lock, finishing my %d. loop cycle. Currently, %d colleagues still have the lock." % (thread_id, cycle, lock_owner_count))
                 except LockTimeout:
-                    print("Thread %2d: Got LockTimeout, finishing my %d. loop cycle." % (thread_id, cycle))
+                    with print_lock:
+                        print("Thread %2d: Got LockTimeout, finishing my %d. loop cycle." % (thread_id, cycle))
                 except:
                     exception_count = exception_counter.incr()
                     e = format_exc()
-                    print("Thread %2d: Exception thrown, finishing my %d. loop cycle. It's the %d. exception seen until now: %s" % (thread_id, cycle, exception_count, e))
+                    with print_lock:
+                        print("Thread %2d: Exception thrown, finishing my %d. loop cycle. It's the %d. exception seen until now: %s" % (thread_id, cycle, exception_count, e))
 
-            print("Thread %2d: Loop timed out--terminating after %d loop cycles." % (thread_id, cycle))
+            with print_lock:
+                print("Thread %2d: Loop timed out--terminating after %d loop cycles." % (thread_id, cycle))
             if last_thread is not None:  # joining its predecessor, if any
                 last_thread.join()
 
         print('')
         lock_owner_counter = SynchronizedCounter()
         exception_counter = SynchronizedCounter()
+        print_lock = ThreadingLock()
         thread = None
         for thread_id in range(RACE_TEST_NUM_THREADS):
-            thread = Thread(target=acquire_release_loop, args=(('foo', thread_id, 0), RACE_TEST_DURATION, thread_id, lock_owner_counter, exception_counter, thread))
+            thread = Thread(target=acquire_release_loop, args=(('foo', thread_id, 0), RACE_TEST_DURATION, thread_id, lock_owner_counter, exception_counter, print_lock, thread))
             thread.start()
         thread.join()  # joining the last thread
 
