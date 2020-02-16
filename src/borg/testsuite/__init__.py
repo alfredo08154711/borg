@@ -231,10 +231,31 @@ class BaseTestCase(unittest.TestCase):
             self._assert_dirs_equal_cmp(sub_diff, ignore_bsdflags=ignore_bsdflags, ignore_xattrs=ignore_xattrs, ignore_ns=ignore_ns)
 
     @contextmanager
-    def fuse_mount(self, location, mountpoint, *options):
+    def fuse_mount(self, location, mountpoint, *options, os_fork=False):
         os.mkdir(mountpoint)
         args = ['mount', location, mountpoint] + list(options)
-        self.cmd(*args, fork=True)
+        if os_fork:
+            # Do not spawn, but actually fork.
+            if os.fork() == 0:
+                # The child process.
+                # Decouple from parent and fork again.
+                # Otherwise, it becomes a zombie and pretends to be alive.
+                os.setsid()
+                if os.fork() > 0:
+                    os._exit(0)
+                # The grandchild process.
+                try:
+                    self.cmd(*args, fork=False)  # borg mount not spawning.
+                finally:
+                    # This should never be reached, since it daemonizes,
+                    # and the grandchild process exits before cmd() returns.
+                    # However, just in case...
+                    print('Fatal: borg mount did not daemonize properly. Force exiting.',
+                            file=sys.stderr, flush=True)
+                    os._exit(0)
+        else:
+            # normal going (spawning)
+            self.cmd(*args, fork=True)
         self.wait_for_mount(mountpoint)
         yield
         umount(mountpoint)
