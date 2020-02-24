@@ -82,6 +82,7 @@ try:
     from .repository import Repository, LIST_SCAN_LIMIT, TAG_PUT, TAG_DELETE, TAG_COMMIT
     from .selftest import selftest
     from .upgrader import AtticRepositoryUpgrader, BorgRepositoryUpgrader
+    from .version import parse_version
 except BaseException:
     # an unhandled exception in the try-block would cause the borg cli command to exit with rc 1 due to python's
     # default behavior, see issue #4424.
@@ -1633,35 +1634,44 @@ class Archiver:
             cache.commit()
         return self.exit_code
 
-    @with_repository(manifest=False, exclusive=True)
+    # By using manifest=False in the decorator, we avoid having to require
+    # the encryption key (and can operate just with encrypted data).
+    # String literal 'exclusive' retrieves the value of the named attribute
+    # of args.
+    # for a new server, this will immediately create a lock of the requested type.
+    @with_repository(manifest=False, exclusive='exclusive')
     def do_with_lock(self, args, repository):
         """run a user specified command with the repository lock held"""
-        # for a new server, this will immediately take an exclusive lock.
-        # to support old servers, that do not have "exclusive" arg in open()
-        # RPC API, we also do it the old way:
-        # re-write manifest to start a repository transaction - this causes a
-        # lock upgrade to exclusive for remote (and also for local) repositories.
-        # by using manifest=False in the decorator, we avoid having to require
-        # the encryption key (and can operate just with encrypted data).
-        data = repository.get(Manifest.MANIFEST_ID)
-        repository.put(Manifest.MANIFEST_ID, data)
-        # usually, a 0 byte (open for writing) segment file would be visible in the filesystem here.
-        # we write and close this file, to rather have a valid segment file on disk, before invoking the subprocess.
-        # we can only do this for local repositories (with .io), though:
-        if hasattr(repository, 'io'):
-            repository.io.close_segment()
+        do_no_change_operation = \
+                args.exclusive and \
+                hasattr(repository, 'server_version') and \
+                repository.server_version < (1, 0, 7, -1)
+        logger.debug('do_with_lock: do_no_change_operation = %s.', do_no_change_operation)
+        if do_no_change_operation:
+            # to support old servers, that do not have "exclusive" arg in open()
+            # RPC API, we do it the old way here:
+            # re-write manifest to start a repository transaction - this causes a
+            # lock upgrade to exclusive for remote repositories.
+            data = repository.get(Manifest.MANIFEST_ID)
+            repository.put(Manifest.MANIFEST_ID, data)
+            # usually, a 0 byte (open for writing) segment file would be visible in the filesystem here.
+            # However, since we are doing this only in the remote case, and
+            # we could only write and close this file for local repositories (with .io),
+            # we are finished here.
+
         env = prepare_subprocess_env(system=True)
         try:
             # we exit with the return code we get from the subprocess
             return subprocess.call([args.command] + args.args, env=env)
         finally:
-            # we need to commit the "no change" operation we did to the manifest
-            # because it created a new segment file in the repository. if we would
-            # roll back, the same file would be later used otherwise (for other content).
-            # that would be bad if somebody uses rsync with ignore-existing (or
-            # any other mechanism relying on existing segment data not changing).
-            # see issue #1867.
-            repository.commit(compact=False)
+            if do_no_change_operation:
+                # we need to commit the "no change" operation we did to the manifest
+                # because it created a new segment file in the repository. if we would
+                # roll back, the same file would be later used otherwise (for other content).
+                # that would be bad if somebody uses rsync with ignore-existing (or
+                # any other mechanism relying on existing segment data not changing).
+                # see issue #1867.
+                repository.commit(compact=False)
 
     @with_repository(manifest=False, exclusive=True)
     def do_compact(self, args, repository):
@@ -4388,6 +4398,9 @@ class Archiver:
                                           formatter_class=argparse.RawDescriptionHelpFormatter,
                                           help='run user command with lock held')
         subparser.set_defaults(func=self.do_with_lock)
+        subparser.add_argument('--shared', dest='exclusive', action='store_false',
+                               help='Lock the repository with a shared (read) instead of an '
+                                    'exclusive (write) lock.')
         subparser.add_argument('location', metavar='REPOSITORY',
                                type=location_validator(archive=False),
                                help='repository to lock')
