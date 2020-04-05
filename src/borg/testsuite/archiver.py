@@ -2560,10 +2560,9 @@ class ArchiverTestCase(ArchiverTestCaseBase):
             self.cmd('init', '--encryption=none', self.repository_location)
             self.create_src_archive('arch')
             mountpoint = os.path.join(self.tmpdir, 'mountpoint')
-            with self.fuse_mount(self.repository_location, mountpoint,
-                    os_fork=True):  # In order that the decoration is kept for the borg mount process,
-                                    # we must not spawn, but actually fork; not to be confused with the
-                                    # forking in borg.helpers.daemonize() which is done as well.
+            # In order that the decoration is kept for the borg mount process, we must not spawn, but actually fork;
+            # not to be confused with the forking in borg.helpers.daemonize() which is done as well.
+            with self.fuse_mount(self.repository_location, mountpoint, os_fork=True):
                 pass
             with open(assert_data_file, 'rb') as _in:
                 assert_data = pickle.load(_in)

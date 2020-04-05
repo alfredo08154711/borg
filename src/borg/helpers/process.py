@@ -51,6 +51,7 @@ def _daemonize():
         os.close(2)
         os.dup2(fd, 2)
 
+
 def daemonize():
     """Detach process from controlling terminal and run in background
 
@@ -58,6 +59,7 @@ def daemonize():
     """
     with _daemonize() as (old_id, new_id):
         return old_id, new_id
+
 
 @contextlib.contextmanager
 def daemonizing(*, timeout=5):
@@ -98,8 +100,8 @@ def daemonizing(*, timeout=5):
                     exit_code = EXIT_SIGNAL_BASE + 2
                 except BaseException as e:
                     # Just in case...
-                    logger.warning('Daemonizing: Foreground process received an exception while waiting:\n'
-                            + ''.join(traceback.format_exception(e.__class__, e, e.__traceback__)))
+                    logger.warning('Daemonizing: Foreground process received an exception while waiting:\n' +
+                                   ''.join(traceback.format_exception(e.__class__, e, e.__traceback__)))
                     exit_code = EXIT_WARNING
                 else:
                     logger.warning('Daemonizing: Background process did not respond (timeout). Is it alive?')
@@ -116,8 +118,8 @@ def daemonizing(*, timeout=5):
             yield old_id, new_id
         except BaseException as e:
             sig_to_foreground = signal.SIGHUP
-            logger.warning('Daemonizing: Background process raised an exception while starting:\n'
-                    + ''.join(traceback.format_exception(e.__class__, e, e.__traceback__)))
+            logger.warning('Daemonizing: Background process raised an exception while starting:\n' +
+                           ''.join(traceback.format_exception(e.__class__, e, e.__traceback__)))
             raise e
         else:
             logger.debug('Daemonizing: Background process (%s, %s, %s) has started.' % new_id)
@@ -125,8 +127,8 @@ def daemonizing(*, timeout=5):
             try:
                 os.kill(old_id[1], sig_to_foreground)
             except BaseException as e:
-                logger.error('Daemonizing: Trying to kill the foreground process raised an exception:\n'
-                        + ''.join(traceback.format_exception(e.__class__, e, e.__traceback__)))
+                logger.error('Daemonizing: Trying to kill the foreground process raised an exception:\n' +
+                             ''.join(traceback.format_exception(e.__class__, e, e.__traceback__)))
 
 
 class _ExitCodeException(BaseException):
