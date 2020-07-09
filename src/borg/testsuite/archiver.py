@@ -2567,7 +2567,7 @@ class ArchiverTestCase(ArchiverTestCaseBase):
                 pass
             with open(assert_data_file, 'rb') as _in:
                 assert_data = pickle.load(_in)
-            print('\nLock.migrate_lock(): assert_data = %s.' % (assert_data), file=sys.stderr, flush=True)
+            print('\nLock.migrate_lock(): assert_data = %r.' % (assert_data, ), file=sys.stderr, flush=True)
             exception = assert_data['exception']
             if exception is not None:
                 extracted_tb = assert_data['exception.extr_tb']
@@ -2582,12 +2582,12 @@ class ArchiverTestCase(ArchiverTestCaseBase):
             assert exception is None, "Lock.migrate_lock() may not raise an exception."
 
             assert_data_before = assert_data['before']
-            assert assert_data_before['old_id_alive'], "old_id must be alive (=may not be stale) when calling Lock.migrate_lock()."
-            assert assert_data_before['new_id_alive'], "new_id must be alive (=may not be stale) when calling Lock.migrate_lock()."
+            assert assert_data_before['old_id_alive'], "old_id must be alive (=must not be stale) when calling Lock.migrate_lock()."
+            assert assert_data_before['new_id_alive'], "new_id must be alive (=must not be stale) when calling Lock.migrate_lock()."
 
             assert_data_after = assert_data['after']
-            assert assert_data_after['old_id_alive'], "old_id must be alive (=may not be stale) when Lock.migrate_lock() has returned."
-            assert assert_data_after['new_id_alive'], "new_id must be alive (=may not be stale) when Lock.migrate_lock() has returned."
+            assert assert_data_after['old_id_alive'], "old_id must be alive (=must not be stale) when Lock.migrate_lock() has returned."
+            assert assert_data_after['new_id_alive'], "new_id must be alive (=must not be stale) when Lock.migrate_lock() has returned."
         finally:
             # Undecorate
             borg.locking.Lock.migrate_lock = borg.locking.Lock.migrate_lock.__wrapped__

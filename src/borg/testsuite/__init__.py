@@ -275,7 +275,7 @@ class BaseTestCase(unittest.TestCase):
                     # and the grandchild process exits before cmd() returns.
                     # However, just in case...
                     print('Fatal: borg mount did not daemonize properly. Force exiting.',
-                            file=sys.stderr, flush=True)
+                          file=sys.stderr, flush=True)
                     os._exit(0)
         else:
             self.cmd(*args, fork=fork, **kwargs)
