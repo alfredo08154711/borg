@@ -1338,6 +1338,7 @@ def daemonize():
     with _daemonize() as (old_id, new_id):
         return old_id, new_id
 
+
 @contextlib.contextmanager
 def daemonizing(*, timeout=5):
     """Like daemonize(), but as context manager.
