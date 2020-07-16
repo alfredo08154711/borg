@@ -12,19 +12,23 @@ borg with-lock
 
     .. class:: borg-options-table
 
-    +-------------------------------------------------------+----------------+--------------------+
-    | **positional arguments**                                                                    |
-    +-------------------------------------------------------+----------------+--------------------+
-    |                                                       | ``REPOSITORY`` | repository to lock |
-    +-------------------------------------------------------+----------------+--------------------+
-    |                                                       | ``COMMAND``    | command to run     |
-    +-------------------------------------------------------+----------------+--------------------+
-    |                                                       | ``ARGS``       | command arguments  |
-    +-------------------------------------------------------+----------------+--------------------+
-    | .. class:: borg-common-opt-ref                                                              |
-    |                                                                                             |
-    | :ref:`common_options`                                                                       |
-    +-------------------------------------------------------+----------------+--------------------+
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
+    | **positional arguments**                                                                                                                                |
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
+    |                                                       | ``REPOSITORY`` | repository to lock                                                             |
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
+    |                                                       | ``COMMAND``    | command to run                                                                 |
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
+    |                                                       | ``ARGS``       | command arguments                                                              |
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
+    | **optional arguments**                                                                                                                                  |
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
+    |                                                       | ``--shared``   | Lock the repository with a shared (read) instead of an exclusive (write) lock. |
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
+    | .. class:: borg-common-opt-ref                                                                                                                          |
+    |                                                                                                                                                         |
+    | :ref:`common_options`                                                                                                                                   |
+    +-------------------------------------------------------+----------------+--------------------------------------------------------------------------------+
 
     .. raw:: html
 
@@ -44,6 +48,10 @@ borg with-lock
         command arguments
 
 
+    optional arguments
+        --shared    Lock the repository with a shared (read) instead of an exclusive (write) lock.
+
+
     :ref:`common_options`
         |
 
@@ -52,10 +60,11 @@ Description
 
 This command runs a user-specified command while the repository lock is held.
 
-It will first try to acquire the lock (make sure that no other operation is
-running in the repo), then execute the given command as a subprocess and wait
-for its termination, release the lock and return the user command's return
-code as borg's return code.
+It will first try to acquire the lock (make sure that no other operation, in
+case of ``--shared``: no other changing operation, is running in the repo),
+then execute the given command as a subprocess and wait for its termination,
+release the lock and return the user command's return code as borg's return
+code.
 
 .. note::
 
