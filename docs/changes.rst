@@ -217,6 +217,34 @@ The best check that everything is ok is to run a dry-run extraction::
 Changelog
 =========
 
+Version borgbackup-porpro 1.0-rc.1 (2020-07-16)
+-----------------------------------------------
+
+- Change package name to 'borgbackup-porpro' with its own version number
+  starting with 1.0.
+
+  This is a fork by me, Thomas Portmann <thomas@portmann.org>, in order to
+  provide a source for packaging the following locking related changes:
+
+  - pull request #4928: Fixed locking, issue #4923
+  - pull request #4954: Fixed lock migration, issue #4953
+  - my solution for feature request #4425: with-lock reader instead of
+    exclusive, see https://github.com/alfredo08154711/borg/tree/with-lock-shared
+
+  This adds option '--shared' to command 'with-lock'. I need this package
+  for testing my solution. The fork is based on branch 1.1-maint, commit
+  1d585ae4, so it includes the following changes on top of version 1.1.13.
+
+Fixes:
+
+- pull request #5243: exit with 128 + signal number, fixes #5161
+- pull request #5237: docs: fix borg.1 manpage generation regression, #5211
+- pull request #5239: docs: clarify --exclude-if-present in recreate, #5193
+- pull request #5228: hardlinked CACHEDIR.TAG issue, #4911
+- pull request #5225: --read-special: .part files also should be regular
+  files, fixes #5217
+
+
 Version 1.1.13 (2020-06-06)
 ---------------------------
 

@@ -842,7 +842,7 @@ if not on_rtd:
         ext_modules.append(Extension('borg.platform.darwin', [platform_darwin_source]))
 
 setup(
-    name='borgbackup',
+    name='borgbackup-porpro',
     use_scm_version={
         'write_to': 'src/borg/_version.py',
     },
