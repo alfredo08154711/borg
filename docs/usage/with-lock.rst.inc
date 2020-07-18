@@ -49,7 +49,7 @@ borg with-lock
 
 
     optional arguments
-        --shared    Lock the repository with a shared (read) instead of an exclusive (write) lock.
+        --shared     Lock the repository with a shared (read) instead of an exclusive (write) lock.
 
 
     :ref:`common_options`
@@ -63,8 +63,7 @@ This command runs a user-specified command while the repository lock is held.
 It will first try to acquire the lock (make sure that no other operation, in
 case of ``--shared``: no other changing operation, is running in the repo),
 then execute the given command as a subprocess and wait for its termination,
-release the lock and return the user command's return code as borg's return
-code.
+release the lock and return the user command's return code as borg's return code.
 
 .. note::
 

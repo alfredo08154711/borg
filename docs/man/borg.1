@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH BORG 1 "2020-04-21" "" "borg backup tool"
+.TH BORG 1 "2020-07-18" "" "borg backup tool"
 .SH NAME
 borg \- deduplicating and encrypting backup tool
 .
@@ -588,7 +588,7 @@ Up to 1000 files per directory (10000 for repositories initialized with Borg 1.0
 rename(2) / MoveFile(Ex) should work as specified, i.e. on the same file system
 it should be a move (not a copy) operation, and in case of a directory
 it should fail if the destination exists and is not an empty directory,
-since this is used for locking
+since this is used for locking.
 .IP \(bu 2
 Hardlinks are needed for \fIborg_upgrade\fP \fB\-\-inplace\fP
 .UNINDENT
@@ -694,7 +694,7 @@ default temporary directory at /tmp. This can be remediated by ensuring the
 $TMPDIR, $TEMP, or $TMP environment variable is properly set for the sshd
 process.
 For some OSes, this can be done just by setting the correct value in the
-.bashrc (or equivalent login config file for other shells), however in
+\&.bashrc (or equivalent login config file for other shells), however in
 other cases it may be necessary to first enable \fBPermitUserEnvironment yes\fP
 in your \fBsshd_config\fP file, then add \fBenvironment="TMPDIR=/my/big/tmpdir"\fP
 at the start of the public key to be used in the \fBauthorized_hosts\fP file.

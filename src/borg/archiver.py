@@ -4379,10 +4379,10 @@ class Archiver:
         with_lock_epilog = process_epilog("""
         This command runs a user-specified command while the repository lock is held.
 
-        It will first try to acquire the lock (make sure that no other operation is
-        running in the repo), then execute the given command as a subprocess and wait
-        for its termination, release the lock and return the user command's return
-        code as borg's return code.
+        It will first try to acquire the lock (make sure that no other operation, in
+        case of ``--shared``: no other changing operation, is running in the repo),
+        then execute the given command as a subprocess and wait for its termination,
+        release the lock and return the user command's return code as borg's return code.
 
         .. note::
 
