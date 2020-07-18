@@ -217,11 +217,11 @@ The best check that everything is ok is to run a dry-run extraction::
 Changelog
 =========
 
-Version borgbackup-porpro 1.0-rc.1 (2020-07-16)
------------------------------------------------
+Version borgbackup-porpro 1.1.14-a.0 (2020-07-18)
+-------------------------------------------------
 
-- Change package name to 'borgbackup-porpro' with its own version number
-  starting with 1.0.
+- Change package name to 'borgbackup-porpro' with version number
+  starting with 1.1.14-a.0.
 
   This is a fork by me, Thomas Portmann <thomas@portmann.org>, in order to
   provide a source for packaging the following locking related changes:
@@ -231,9 +231,11 @@ Version borgbackup-porpro 1.0-rc.1 (2020-07-16)
   - my solution for feature request #4425: with-lock reader instead of
     exclusive, see https://github.com/alfredo08154711/borg/tree/with-lock-shared
 
-  This adds option '--shared' to command 'with-lock'. I need this package
+  The last adds option '--shared' to command 'with-lock'. I need this package
   for testing my solution. The fork is based on branch 1.1-maint, commit
   1d585ae4, so it includes the following changes on top of version 1.1.13.
+
+- Amend docs for with-lock --shared
 
 Fixes:
 
