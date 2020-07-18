@@ -49,7 +49,7 @@ borg with-lock
 
 
     optional arguments
-        --shared    Lock the repository with a shared (read) instead of an exclusive (write) lock.
+        --shared     Lock the repository with a shared (read) instead of an exclusive (write) lock.
 
 
     :ref:`common_options`
@@ -63,12 +63,12 @@ This command runs a user-specified command while the repository lock is held.
 It will first try to acquire the lock (make sure that no other operation, in
 case of ``--shared``: no other changing operation, is running in the repo),
 then execute the given command as a subprocess and wait for its termination,
-release the lock and return the user command's return code as borg's return
-code.
+release the lock and return the user command's return code as borg's return code.
 
 .. note::
 
-    If you copy a repository with the lock held, the lock will be present in
-    the copy. Thus, before using borg on the copy from a different host,
-    you need to use "borg break-lock" on the copied repository, because
-    Borg is cautious and does not automatically remove stale locks made by a different host.
+    If you copy a repository with the lock held (a ``--shared`` lock is sufficient
+    for that), the lock will be present in the copy. Thus, before using borg
+    on the copy from a different host, you need to use "borg break-lock"
+    on the copied repository, because Borg is cautious and does not
+    automatically remove stale locks made by a different host.
