@@ -4050,11 +4050,10 @@ class Archiver:
 
         .. note::
 
-            If you copy a repository with the lock held (a ``--shared`` lock is sufficient
-            for that), the lock will be present in the copy. Thus, before using borg
-            on the copy from a different host, you need to use "borg break-lock"
-            on the copied repository, because Borg is cautious and does not
-            automatically remove stale locks made by a different host.
+            If you copy a repository with the lock held, the lock will be present in
+            the copy. Thus, before using borg on the copy from a different host,
+            you need to use "borg break-lock" on the copied repository, because
+            Borg is cautious and does not automatically remove stale locks made by a different host.
         """)
         subparser = subparsers.add_parser('with-lock', parents=[common_parser], add_help=False,
                                           description=self.do_with_lock.__doc__,

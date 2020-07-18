@@ -45,11 +45,10 @@ release the lock and return the user command\(aqs return code as borg\(aqs retur
 \fBNOTE:\fP
 .INDENT 0.0
 .INDENT 3.5
-If you copy a repository with the lock held (a \fB\-\-shared\fP lock is sufficient
-for that), the lock will be present in the copy. Thus, before using borg
-on the copy from a different host, you need to use "borg break\-lock"
-on the copied repository, because Borg is cautious and does not
-automatically remove stale locks made by a different host.
+If you copy a repository with the lock held, the lock will be present in
+the copy. Thus, before using borg on the copy from a different host,
+you need to use "borg break\-lock" on the copied repository, because
+Borg is cautious and does not automatically remove stale locks made by a different host.
 .UNINDENT
 .UNINDENT
 .SH OPTIONS

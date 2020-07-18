@@ -67,8 +67,7 @@ release the lock and return the user command's return code as borg's return code
 
 .. note::
 
-    If you copy a repository with the lock held (a ``--shared`` lock is sufficient
-    for that), the lock will be present in the copy. Thus, before using borg
-    on the copy from a different host, you need to use "borg break-lock"
-    on the copied repository, because Borg is cautious and does not
-    automatically remove stale locks made by a different host.
+    If you copy a repository with the lock held, the lock will be present in
+    the copy. Thus, before using borg on the copy from a different host,
+    you need to use "borg break-lock" on the copied repository, because
+    Borg is cautious and does not automatically remove stale locks made by a different host.
